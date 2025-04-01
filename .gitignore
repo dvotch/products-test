@@ -16,3 +16,4 @@ build
 !**/*/viewer-front/build
 .DS_Store
 .vscode
+packages/server/pgdata

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "run:products-web": "lerna run --scope products-web dev",
-    "run:server": "lerna run --scope server start:dev"
+    "run:server": "lerna run --scope server start:dev",
+    "run:docker-up": "lerna run --scope server start:docker"
   },
   "workspaces": [
     "packages/*"
