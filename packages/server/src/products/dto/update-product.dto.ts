@@ -1,4 +1,6 @@
 export class UpdateProductDto {
-  name?: string;
-  description?: string;
+  constructor(
+    public name?: string,
+    public description?: string,
+  ) {}
 }

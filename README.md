@@ -12,15 +12,17 @@ yarn workspace <workspace_name> add <package_name>
 
 DATABASE_URL="postgresql://user:password@localhost:5432/db?schema=public"
 
-### Product-web
-
----
-
 ### Start server
 
 You can up postgres local or use docker-compose.yml located in "server" workspace
 To run docker file, run
 
 ```bash
-yarn run:docker-up
+yarn run:docker-postgres-up
+```
+
+Then start rabbitmq contaier, run
+
+```bash
+yarn run:docker-rabbitmq-up
 ```
