@@ -10,7 +10,7 @@ export function useProductsEvents() {
     const [event, setEvent] = useState<ProductEvent>();
 
     useEffect(() => {
-        const eventSource = new EventSource(process.env.NEXT_PUBLIC_SSE_PRODUCTS_URL!);
+        const eventSource = new EventSource(process.env.NEXT_PUBLIC_SSE_PRODUCTS_URL as string);
 
         eventSource.onmessage = (e) => {
             try {
