@@ -1,18 +1,20 @@
 {
-  "name": "root",
-  "private": true,
-  "scripts": {
-    "run:products-web": "lerna run --scope products-web dev",
-    "run:products-web-consumer": "lerna run --scope products-web-consumer dev",
-    "run:server": "lerna run --scope server start:dev",
-    "run:docker-postgres-up": "lerna run --scope server start:docker-postgres",
-    "run:docker-rabbitmq-up": "lerna run --scope server start:docker-rabbitmq"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "lerna": "^8.2.1"
-  }
+    "name": "root",
+    "private": true,
+    "scripts": {
+        "run:products-web": "lerna run --scope products-web dev",
+        "run:products-web-consumer": "lerna run --scope products-web-consumer dev",
+        "run:server": "lerna run --scope server start:dev",
+        "run:docker-postgres-up": "lerna run --scope server start:docker-postgres",
+        "run:docker-rabbitmq-up": "lerna run --scope server start:docker-rabbitmq",
+        "format": "prettier --write ."
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "dependencies": {},
+    "devDependencies": {
+        "lerna": "^8.2.1",
+        "prettier": "^3.0.2"
+    }
 }

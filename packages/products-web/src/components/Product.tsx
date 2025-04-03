@@ -1,6 +1,7 @@
 import { ProductEntity } from '@/entities/product.entity';
 import { Button } from './common/Button';
 import { useState } from 'react';
+import { CustomInput } from './common/CustomInput';
 
 type Props = {
     product: ProductEntity;
@@ -11,30 +12,27 @@ type Props = {
 const Product = ({ product, onDelete, onUpdate }: Props) => {
     const [dryProduct, setDryProduct] = useState<ProductEntity>(product);
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        await onUpdate(dryProduct);
+    };
+
     return (
-        <div className="flex justify-between mt-4 border-b-2 pb-2">
-            <input
+        <form className="flex justify-between mt-4 border-b-2 pb-2" onSubmit={handleSubmit}>
+            <CustomInput
                 value={dryProduct.name}
                 onChange={(e) => setDryProduct({ ...dryProduct, name: e.target.value })}
-                className="border"
+                required={true}
+                placeholder="Описание"
             />
-            <input
+            <CustomInput
                 value={dryProduct.description}
                 onChange={(e) => setDryProduct({ ...dryProduct, description: e.target.value })}
-                className="border"
+                placeholder="Описание"
             />
             <Button onClick={onDelete}>Удалить</Button>
-            <Button
-                onClick={() =>
-                    onUpdate({
-                        name: dryProduct.name,
-                        description: dryProduct.description,
-                    })
-                }
-            >
-                Обновить
-            </Button>
-        </div>
+            <Button type="submit">Обновить</Button>
+        </form>
     );
 };
 

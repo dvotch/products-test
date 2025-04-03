@@ -6,7 +6,7 @@ type AVAIL_CRUD_METHODS = 'POST' | 'PATCH' | 'GET' | 'DELETE';
 
 type SendOptions = {
     method: AVAIL_CRUD_METHODS;
-    data?: Record<string, any>;
+    data?: CreateProductDto | UpdateProductDto;
     subEndpoint?: string;
 };
 
@@ -23,11 +23,11 @@ class ProductRepository {
     }
 
     async get(subEndpoint?: string): Promise<ProductEntity[]> {
-        return await this.send({ data: {}, method: 'GET', subEndpoint });
+        return await this.send({ method: 'GET', subEndpoint });
     }
 
     async post(dto: CreateProductDto, subEndpoint?: string): Promise<ProductEntity> {
-        return await this.send({ data: dto, method: 'POST' });
+        return await this.send({ data: dto, method: 'POST', subEndpoint });
     }
 
     async patch(id: number, dto: UpdateProductDto): Promise<ProductEntity> {
@@ -40,11 +40,17 @@ class ProductRepository {
 
     private async send({ data, method, subEndpoint }: SendOptions) {
         const finalUrl = subEndpoint ? new URL(subEndpoint, this._url) : this._url;
+        const isGet = method === 'GET';
+
+        let dataToSend = undefined;
+        if (data && !isGet) {
+            dataToSend = JSON.stringify(data);
+        }
 
         const response = await fetch(finalUrl, {
             method,
-            body: data ? JSON.stringify(data) : undefined,
-            headers: data ? { 'Content-Type': 'application/json' } : {},
+            body: dataToSend,
+            headers: dataToSend ? { 'Content-Type': 'application/json' } : {},
         });
         return this.returnOrThrow(response);
     }

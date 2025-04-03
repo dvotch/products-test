@@ -25,7 +25,7 @@ const ProductsList = () => {
 
     const createProduct = async () => {
         const product = await productRepository.post({
-            name: '',
+            name: 'Новый продукт',
             description: '',
         });
         setProducts((prev) => [...prev, product]);

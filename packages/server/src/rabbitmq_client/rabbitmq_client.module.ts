@@ -1,10 +1,11 @@
 import { Module, DynamicModule } from '@nestjs/common';
-import { ClientsModule, RmqOptions, Transport } from '@nestjs/microservices';
+import { ClientsModule } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQClientConfig } from './rabbitmq_client.config';
+import { RabbitMQQueuesType } from 'types/rabbitmq-queues.type';
 
 interface RabbitMQClientModuleOptions {
-    name: string;
+    name: RabbitMQQueuesType;
 }
 
 @Module({})
