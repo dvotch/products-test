@@ -1,16 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { CreateProductDto } from './dto/create-product.dto';
-import { AService } from 'src/abstract/abstract.service';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
-export class ProductsService extends AService<
-  Prisma.ProductGetPayload<unknown>,
-  Prisma.ProductCreateInput,
-  Prisma.ProductUpdateInput
-> {
-  constructor(private readonly prismaService: PrismaService) {
-    super(prismaService.product);
+export class ProductsService {
+  constructor(
+    @Inject('PRODUCTS_SERVICE') private readonly productClient: ClientProxy,
+  ) {}
+
+  async create(dto: CreateProductDto) {
+    return this.productClient.send('create_product', dto);
+  }
+
+  async update(id: number, dto: UpdateProductDto) {
+    return this.productClient.send('update_product', { id, dto });
+  }
+
+  async delete(id: number) {
+    return this.productClient.send('delete_product', id);
+  }
+
+  async findAll() {
+    return this.productClient.send({ cmd: 'get_products' }, {});
   }
 }
