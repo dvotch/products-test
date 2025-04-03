@@ -2,25 +2,20 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { RabbitMQClientConfig } from './rabbitmq_client/rabbitmq_client.config';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
+    const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(new ValidationPipe());
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [configService.get<string>('RABBIT_MQ_URI')],
-      queue: 'products_queue',
-      queueOptions: {
-        durable: true,
-      },
-    },
-  });
+    const configService = app.get(ConfigService);
 
-  await app.startAllMicroservices();
+    app.connectMicroservice<MicroserviceOptions>(RabbitMQClientConfig.create('PRODUCTS', configService));
 
-  app.enableCors({ origin: true });
-  await app.listen(3000);
+    await app.startAllMicroservices();
+
+    app.enableCors({ origin: true });
+    await app.listen(3000);
 }
 bootstrap();

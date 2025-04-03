@@ -6,12 +6,8 @@ import { ProductsConsumerService } from './products_consumer.service';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [
-    PrismaModule,
-    RabbitMQClientModule.register({ name: 'PRODUCTS' }),
-    EventEmitterModule.forRoot(),
-  ],
-  controllers: [ProductsConsumerController],
-  providers: [ProductsConsumerService],
+    imports: [PrismaModule, RabbitMQClientModule.register({ name: 'PRODUCTS' }), EventEmitterModule.forRoot()],
+    controllers: [ProductsConsumerController],
+    providers: [ProductsConsumerService],
 })
 export class ProductsConsumerModule {}

@@ -1,6 +1,11 @@
+import { IsOptional, IsString } from 'class-validator';
+
 export class UpdateProductDto {
-  constructor(
-    public name?: string,
-    public description?: string,
-  ) {}
+    @IsString()
+    @IsOptional()
+    name: string;
+
+    @IsString()
+    @IsOptional()
+    description: string;
 }

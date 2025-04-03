@@ -1,69 +1,75 @@
-import { ProductEntity } from "@/entities/product.entity";
-import { CreateProductDto } from "./dto/create-product.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
+import { ProductEntity } from '@/entities/product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
-type AVAIL_CRUD_METHODS = "POST" | "PATCH" | "GET" | "DELETE";
+type AVAIL_CRUD_METHODS = 'POST' | 'PATCH' | 'GET' | 'DELETE';
 
 type SendOptions = {
-  method: AVAIL_CRUD_METHODS;
-  data?: Record<string, any>;
-  subEndpoint?: string;
+    method: AVAIL_CRUD_METHODS;
+    data?: Record<string, any>;
+    subEndpoint?: string;
 };
 
 class ProductRepository {
-  private _url = new URL("products/", process.env.NEXT_PUBLIC_SERVER_URL);
+    private _url = new URL('products/', process.env.NEXT_PUBLIC_SERVER_URL);
+    private _validationErrors: Record<keyof ProductEntity, string> | null = null;
 
-  async getProducts(): Promise<ProductEntity[]> {
-    try {
-      const response = await fetch(this._url);
-      return response.json();
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      throw new Error("Failed to fetch products");
+    get validationErrors() {
+        return this._validationErrors;
     }
-  }
 
-  async createProduct(dto: CreateProductDto) {
-    try {
-      return await this.send({ method: "POST", data: dto });
-    } catch (error) {
-      console.error("Erorr creating product:", error);
-      throw new Error("Failed to create product");
+    resetErrors() {
+        this._validationErrors = null;
     }
-  }
 
-  async deleteProduct(id: number) {
-    try {
-      return await this.send({ method: "DELETE", subEndpoint: `${id}/` });
-    } catch (error) {
-      console.error("Error deleting product:", error);
-      throw new Error("Failed to delete product");
+    async get(subEndpoint?: string): Promise<ProductEntity[]> {
+        return await this.send({ data: {}, method: 'GET', subEndpoint });
     }
-  }
 
-  async updateProduct(id: number, dto: UpdateProductDto) {
-    try {
-      return await this.send({
-        method: "PATCH",
-        subEndpoint: `${id}`,
-        data: dto,
-      });
-    } catch (error) {
-      console.error("Failed to update product:", error);
-      throw new Error("Failed to update product");
+    async post(dto: CreateProductDto, subEndpoint?: string): Promise<ProductEntity> {
+        return await this.send({ data: dto, method: 'POST' });
     }
-  }
 
-  private async send({ data, method, subEndpoint }: SendOptions) {
-    const finalUrl = subEndpoint ? new URL(subEndpoint, this._url) : this._url;
+    async patch(id: number, dto: UpdateProductDto): Promise<ProductEntity> {
+        return await this.send({ data: dto, method: 'PATCH', subEndpoint: `${id}/` });
+    }
 
-    const response = await fetch(finalUrl, {
-      method,
-      body: data ? JSON.stringify(data) : undefined,
-      headers: data ? { "Content-Type": "application/json" } : {},
-    });
-    return response.json();
-  }
+    async delete(id: number): Promise<ProductEntity> {
+        return await this.send({ method: 'DELETE', subEndpoint: `${id}/` });
+    }
+
+    private async send({ data, method, subEndpoint }: SendOptions) {
+        const finalUrl = subEndpoint ? new URL(subEndpoint, this._url) : this._url;
+
+        const response = await fetch(finalUrl, {
+            method,
+            body: data ? JSON.stringify(data) : undefined,
+            headers: data ? { 'Content-Type': 'application/json' } : {},
+        });
+        return this.returnOrThrow(response);
+    }
+
+    private async returnOrThrow(response: Response) {
+        if (response.status >= 200 && response.status < 300) {
+            return response.json();
+        }
+
+        if (response.status === 400) {
+            const isJson = response.headers.get('content-type')?.startsWith('application/json');
+            if (!isJson) throw new Error('Unknown error');
+            this.parseValidationErrors(response);
+        }
+
+        throw new Error('Unknown error');
+    }
+
+    private async parseValidationErrors(response: Response) {
+        const parsed = await response.json();
+        if (!('validationErrors' in parsed)) throw new Error('Unknown error');
+
+        this._validationErrors = parsed.validationErrors;
+        throw new Error('Bad request');
+    }
 }
 
 export const productRepository = new ProductRepository();

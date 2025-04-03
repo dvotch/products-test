@@ -1,6 +1,11 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 export class CreateProductDto {
-  constructor(
-    public name: string,
-    public description: string,
-  ) {}
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsString()
+    @IsOptional()
+    description: string;
 }
