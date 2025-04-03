@@ -10,12 +10,12 @@ type SendOptions = {
   subEndpoint?: string;
 };
 
-class ProductService {
+class ProductRepository {
   private _url = new URL("products/", process.env.NEXT_PUBLIC_SERVER_URL);
 
   async getProducts(): Promise<ProductEntity[]> {
     try {
-      const response = await fetch(this._url, { method: "GET" });
+      const response = await fetch(this._url);
       return response.json();
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -62,9 +62,8 @@ class ProductService {
       body: data ? JSON.stringify(data) : undefined,
       headers: data ? { "Content-Type": "application/json" } : {},
     });
-    console.log(response);
     return response.json();
   }
 }
 
-export const productService = new ProductService();
+export const productRepository = new ProductRepository();

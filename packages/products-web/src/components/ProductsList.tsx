@@ -3,8 +3,8 @@
 import { ProductEntity } from "@/entities/product.entity";
 import Product from "./Product";
 import { useEffect, useState } from "react";
-import { productService } from "@/services/product/product.service";
-import { UpdateProductDto } from "@/services/product/dto/update-product.dto";
+import { productRepository } from "@/repositories/product/product.repository";
+import { UpdateProductDto } from "@/repositories/product/dto/update-product.dto";
 import { Button } from "./common/Button";
 
 const ProductsList = () => {
@@ -12,33 +12,32 @@ const ProductsList = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const refetchProducts = async () => {
+      setLoading(true);
+      const products = await productRepository.getProducts();
+      setLoading(false);
+      if (!products) return;
+      setProducts(products);
+    };
+
     refetchProducts();
   }, []);
 
-  const refetchProducts = async () => {
-    setLoading(true);
-    const products = await productService.getProducts();
-    setLoading(false);
-    if (!products) return;
-    setProducts(products);
-  };
-
   const handleCreateProduct = async () => {
-    const product = await productService.createProduct({
+    const product = await productRepository.createProduct({
       name: "",
       description: "",
     });
-    console.log(product);
-    // setProducts((prev) => [...prev, product]);
+    setProducts((prev) => [...prev, product]);
   };
 
   const handleDeleteProduct = async (id: number) => {
-    const product = await productService.deleteProduct(id);
+    const product = await productRepository.deleteProduct(id);
     setProducts((prev) => prev.filter((p) => p.id !== product.id));
   };
 
   const handleUpdateProduct = async (id: number, dto: UpdateProductDto) => {
-    const product = await productService.updateProduct(id, dto);
+    const product = await productRepository.updateProduct(id, dto);
     setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)));
   };
 

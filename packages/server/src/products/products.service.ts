@@ -7,18 +7,20 @@ import { UpdateProductDto } from './dto/update-product.dto';
 export class ProductsService {
   constructor(
     @Inject('PRODUCTS_SERVICE') private readonly productClient: ClientProxy,
-  ) {}
+  ) {
+    // this.productClient.connect();
+  }
 
   async create(dto: CreateProductDto) {
-    return this.productClient.send('create_product', dto);
+    return this.productClient.send({ cmd: 'create_product' }, dto);
   }
 
   async update(id: number, dto: UpdateProductDto) {
-    return this.productClient.send('update_product', { id, dto });
+    return this.productClient.send({ cmd: 'update_product' }, { id, dto });
   }
 
   async delete(id: number) {
-    return this.productClient.send('delete_product', id);
+    return this.productClient.send({ cmd: 'delete_product' }, id);
   }
 
   async findAll() {

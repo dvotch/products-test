@@ -2,11 +2,14 @@
 
 import { ProductEntity } from "@/entities/product.entity";
 import { useEffect, useState } from "react";
-import Product from "./Product";
 import { useProductsEvents } from "@/hooks/useProductsEvents";
+import Product from "./Product";
+import { productRepository } from "@/repositories/product.repository";
 
 const ProductsList = () => {
   const [products, setProducts] = useState<ProductEntity[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const event = useProductsEvents();
 
   useEffect(() => {
@@ -24,6 +27,16 @@ const ProductsList = () => {
         break;
     }
   }, [event]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const products = await productRepository.getProducts();
+      setLoading(false);
+      setProducts(products);
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <ul className="border flex flex-col w-2xl p-4">
