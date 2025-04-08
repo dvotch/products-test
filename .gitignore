@@ -17,4 +17,5 @@ build
 .DS_Store
 .vscode
 packages/server/pgdata
-packages/server/rabbitmq
+packages/server/pgdata
+/rabbitmq
